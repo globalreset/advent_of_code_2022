@@ -1,15 +1,13 @@
-inputList = IO.readlines("day1/dayOneInput.txt")
+inputList = IO.readlines("day1/dayOneInput.txt").map(&:chomp)
 
-elf = 0
-caloriesPerElf = []
-inputList.size.times { |i|
-   if(inputList[i].chomp=="")
-      elf += 1
-   else
-      caloriesPerElf[elf] = (caloriesPerElf[elf] || 0) + inputList[i].to_i
-   end
-}
+elfTable = []
+while (idx = inputList.index(""))
+   elfTable << inputList.shift(idx).map{|i| i.to_i}
+   inputList.shift
+end
+elfTable << inputList.map{|i| i.to_i }
 
-puts caloriesPerElf.max
+elfSums = elfTable.map { |i| i.inject(:+) }.sort
 
-puts caloriesPerElf.sort[-3..-1].inject(:+)
+puts elfSums[-1]
+puts elfSums[-3..-1].inject(:+)
