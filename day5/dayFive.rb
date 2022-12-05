@@ -17,7 +17,7 @@ inputList.each { |i|
       }
    end
 }
-origColumns = columns.map{|col|col.dup}
+origColumns = columns.clone.map(&:clone)
 
 moves.each { |m|
    qty, src, dst = m
@@ -25,15 +25,11 @@ moves.each { |m|
       columns[dst].push(columns[src].pop)
    }
 }
-
-p columns.map{|col| col[-1]}.join("")
+p columns.map(&:last).join("")
 
 columns = origColumns
 moves.each { |m|
    qty, src, dst = m
-   columns[src].pop(qty).each{|i|
-     columns[dst].push(i)
-   }
+   columns[dst].push(columns[src].pop(qty)).flatten!
 }
-
-p columns.map{|col| col[-1]}.join("")
+p columns.map(&:last).join("")
