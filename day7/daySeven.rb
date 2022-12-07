@@ -41,4 +41,4 @@ puts dirSize.values.find_all { |i| i<=100000 }.sum
 
 freeSpace = 70000000 - dirSize["/"]
 target = 30000000 - freeSpace
-puts dirSize.values.sort.partition{ |i| i>target }[0][0]
+puts dirSize.values.sort.find_all{ |i| i>target }[0]
