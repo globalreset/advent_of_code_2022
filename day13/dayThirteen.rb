@@ -9,7 +9,6 @@ while(inputList.size>0)
 end
 
 def comparePair(left, right)
-   puts "comparePair: #{left} vs #{right}"
    if(left==nil || right==nil)
       if(left==nil)
          return -1 
@@ -38,7 +37,7 @@ indexSum = 0
 left.zip(right).each_with_index { |pair, index|
    if(comparePair(pair[0], pair[1])==-1)
       indexSum += index + 1
-   else
+   end
 }
 puts indexSum
 
