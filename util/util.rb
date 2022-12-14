@@ -11,6 +11,7 @@ end
 class Grid
    @grid = {}
 
+
    def initialize
       @grid = {}
    end
@@ -37,8 +38,19 @@ class Grid
       @grid[x][y] if(@grid[x])
    end
 
+   def [](x,y)
+      getPoint(x,y)
+   end
+
+   def []=(x,y,value)
+      setPoint(x,y,value)
+   end
+
    def setPoints(points,value)
       points.each{|x,y| setPoint(x,y,value)}
+   end
+   def getPoints(points,value)
+      points.map{|x,y| getPoint(x,y)}
    end
 
    def getLine(x1,y1,x2,y2)
@@ -62,14 +74,18 @@ class Grid
       return lineBetween
    end
 
-   def to_s(unassigned=".")
+   # print defaults to 0,0 in top left, x=col, y=row
+   # returns array of strings so it can easily be reversed
+   # for either access
+   def to_s(unassigned=".", border="+")
+      rows = []
       minX = @grid.keys.min - 1
       maxX = @grid.keys.max + 1
       yVals = @grid.values.map {|g|g.keys}.flatten
       minY = 0#yVals.min - 1
       maxY = yVals.max + 1
 
-      puts "+"*(maxX-minX+1+2)
+      rows << border*(maxX-minX+1+2)
       (minY..maxY).to_a.each { |y|
          line = ""
          (minX..maxX).to_a.each { |x|
@@ -79,9 +95,10 @@ class Grid
                line += unassigned
             end
          }
-         puts "+" + line + "+"
+         rows << border + line + border
       }
-      puts "+"*(maxX-minX+1+2)
+      rows << border*(maxX-minX+1+2)
+      return rows
    end
 end
 
