@@ -8,6 +8,82 @@ class Hash
   end
 end
 
+class Grid
+   @grid = {}
+
+   def initialize
+      @grid = {}
+   end
+
+   def grid
+      return @grid
+   end
+
+   def getXRange
+      return (@grid.keys.min)..(@grid.keys.max)
+   end
+
+   def getYRange
+      yVals = @grid.values.map{|p|p.keys}.flatten
+      return (yVals.min)..(yVals.max)
+   end
+
+   def setPoint(x,y,value)
+      @grid[x] ||= {}
+      @grid[x][y] = value
+   end
+
+   def getPoint(x,y)
+      @grid[x][y] if(@grid[x])
+   end
+
+   def setPoints(points,value)
+      points.each{|x,y| setPoint(x,y,value)}
+   end
+
+   def getLine(x1,y1,x2,y2)
+      lineBetween = []
+      dx = x2 - x1
+      dy = y2 - y1
+      if(dx == 0)
+         (dy.abs+1).times { |i|
+            lineBetween << [x1, y1+(dy/dy.abs)*i]
+         }
+      elsif(dy == 0)
+         (dx.abs+1).times { |i|
+            lineBetween << [x1+(dx/dx.abs)*i, y1]
+         }
+      else
+         slope = dy/dx
+         (dx.abs+1).times { |i|
+            lineBetween << [x1+(dx/dx.abs)*i, y1+slope*i*(dy/dy.abs)]
+         }
+      end
+      return lineBetween
+   end
+
+   def to_s(unassigned=".")
+      minX = @grid.keys.min - 1
+      maxX = @grid.keys.max + 1
+      yVals = @grid.values.map {|g|g.keys}.flatten
+      minY = 0#yVals.min - 1
+      maxY = yVals.max + 1
+
+      puts "+"*(maxX-minX+1+2)
+      (minY..maxY).to_a.each { |y|
+         line = ""
+         (minX..maxX).to_a.each { |x|
+            if(@grid.keys.include?(x) && @grid[x].keys.include?(y))
+               line += "#{@grid[x][y]}" 
+            else
+               line += unassigned
+            end
+         }
+         puts "+" + line + "+"
+      }
+      puts "+"*(maxX-minX+1+2)
+   end
+end
 
 require_relative 'pqueue'
 
