@@ -53,6 +53,7 @@ class Grid
       points.map{|x,y| getPoint(x,y)}
    end
 
+   #helper function for calculating all the points along a line
    def getLine(x1,y1,x2,y2)
       lineBetween = []
       dx = x2 - x1
@@ -76,7 +77,7 @@ class Grid
 
    # print defaults to 0,0 in top left, x=col, y=row
    # returns array of strings so it can easily be reversed
-   # for either access
+   # for either axis
    def to_s(unassigned=".", border="+")
       rows = []
       minX = @grid.keys.min - 1
