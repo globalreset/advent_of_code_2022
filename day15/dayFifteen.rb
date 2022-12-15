@@ -1,11 +1,13 @@
 inputList = IO.readlines("day15/dayFifteenInput.txt").map(&:chomp)
 
+Point = Struct.new(:x,:y)
+
 input = inputList.map{ |line|
    nums = line.scan(/-?\d+/).map(&:to_i)
-   s = nums[0..1]
-   b = nums[2..3]
+   s = Point.new(nums[0],nums[1])
+   b = Point.new(nums[2],nums[3])
    # manhattan distance to beacon from sensor
-   dist = (s[0] - b[0]).abs + (s[1] - b[1]).abs
+   dist = (s.x - b.x).abs + (s.y - b.y).abs
    # track sensor, beacon, and manhattan distance
    [s,b,dist]
 }
@@ -21,7 +23,7 @@ def mergeRanges(ranges)
       if(testRange.end >= range.begin)
          # we have overlap, create a new range and continue checking
          # for merge opportunities
-         testRange = [testRange.min,range.min].min..[testRange.max,range.max].max
+         testRange = [testRange.begin,range.begin].min..[testRange.end,range.end].max
       else
          # doesn't overlap, keep the current test range and check
          # the next range
@@ -37,12 +39,12 @@ def getRanges(input, row)
    ranges = input.map { |s,b,dist|
       # span is manhattan distance left after we trvel
       # to target row from current sensor
-      span = dist - (s[1] - row).abs
+      span = dist - (s.y - row).abs
       if(span>=0)
          # we can reach that span left or right from
          # intersection point of Sensor's column with
          # the current target row
-         ((s[0]-span)..(s[0]+span))
+         ((s.x-span)..(s.x+span))
       end
    }.compact
    return mergeRanges(ranges)
@@ -52,7 +54,7 @@ end
    ranges = getRanges(input, row)
 
    beaconCnt = input.map { |s,b,dist|
-      b if((b[1]==row)) # find beacons on the target row
+      b if((b.y==row)) # find beacons on the target row
    }.compact.uniq.size
 
    puts ranges.map(&:size).sum - beaconCnt
