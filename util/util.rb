@@ -26,7 +26,7 @@ class Grid
 
    def getYRange
       yVals = @grid.values.map{|p|p.keys}.flatten
-      return (yVals.min)..(yVals.max)
+      return (yVals.min)..(yVals.max) if(yVals.size>0)
    end
 
    def setPoint(x,y,value)
@@ -38,10 +38,57 @@ class Grid
       @grid[x][y] if(@grid[x])
    end
 
+
+   def setRow(y, values, xRange=nil)
+      if(xRange==nil)
+         xRange = 0...values.size
+      end
+      xRange.each { |x| setPoint(x,y,values[x]) }
+   end
+
+   def setCol(x, values, yRange=nil)
+      if(yRange==nil)
+         yRange = 0...values.size
+      end
+      yRange.each { |y| setPoint(x,y,values[y]) }
+   end
+
    def getRow(y)
       minX = @grid.keys.min
       maxX = @grid.keys.max
       (minX..maxX).to_a.map{ |x| @grid[x] && @grid[x][y] }
+   end
+
+   def getCol(x)
+      yVals = @grid.values.map {|g|g.keys}.flatten
+      minY = yVals.min
+      maxY = yVals.max
+      (minY..maxY).to_a.map{ |y| @grid[x][y] }
+   end
+
+   # returns 2 dimensional array of values
+   # handy for easier slicing
+   # can be any window on the existing grid
+   def getSimpleGrid(xRange=nil, yRange=nil)
+      if(xRange==nil)
+         minX = @grid.keys.min
+         maxX = @grid.keys.max
+         xRange = minX..maxX
+      end
+      if(yRange==nil)
+         yVals = @grid.values.map {|g|g.keys}.flatten
+         minY = yVals.min
+         maxY = yVals.max
+         yRange = minY..maxY
+      end
+      simpleGrid = []
+      xRange.each { |x|
+         simpleGrid << []
+         yRange.each { |y|
+            simpleGrid[-1] << @grid[x][y]
+         }
+      }
+      return simpleGrid
    end
 
    def [](x,y)
@@ -86,11 +133,11 @@ class Grid
    # for either axis
    def to_s(unassigned=".", border="+")
       rows = []
-      minX = @grid.keys.min - 1
-      maxX = @grid.keys.max + 1
+      minX = @grid.keys.min 
+      maxX = @grid.keys.max
       yVals = @grid.values.map {|g|g.keys}.flatten
-      minY = 0#yVals.min - 1
-      maxY = yVals.max + 1
+      minY = 0#yVals.min
+      maxY = yVals.max
 
       rows << border*(maxX-minX+1+2)
       (minY..maxY).to_a.each { |y|
