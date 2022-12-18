@@ -55,7 +55,7 @@ while(i<1000000000000)
          puts "cheating now"
          #period is 1725
          cheatAmount = (1000000000000 - i)/1725
-         sizeNuked += cheatAmount*grid.size
+         sizeNuked += cheatAmount*(grid.size-2)
          i += cheatAmount*1725
          previousSum = {}
       end
