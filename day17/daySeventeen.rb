@@ -46,13 +46,10 @@ while(i<1000000000000)
       # can't find one row that blocks the whole rest of grid, so
       # what about 2 rows
       sum = grid[0..-3].sum
-      puts "sealed at #{grid.size}, i:#{i}, #{sum}, #{input[0..32].join("")}" +
-           "#{rockTypes.flatten.join("").hash}, #{input.join("").hash}"
       if(previousSum[grid.size]==sum && 
          previousRockTypes[grid.size]==rockTypes && 
          previousInput[grid.size]==input)
          #Simulate all the rocks
-         puts "cheating now"
          #period is 1725
          cheatAmount = (1000000000000 - i)/1725
          sizeNuked += cheatAmount*(grid.size-2)
@@ -115,6 +112,7 @@ while(i<1000000000000)
       end
    end
    i += 1
+   puts grid.size if(i==2022)
 end
 #}
 puts sizeNuked + grid.size
