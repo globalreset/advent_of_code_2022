@@ -51,7 +51,7 @@ def getBestGeodes(bp, minutes)
             canBuildObsBot = !canBuildGeodeBot && 
                (curr.obsBotCnt<bp.geodeBotObs) &&
                (curr.ore>=bp.obsBotOre && curr.clay>=bp.obsBotClay)
-            canBuildClayBot = !canBuildGeodeBot && 
+            canBuildClayBot = !canBuildGeodeBot && !canBuildObsBot &&
                #don't need nore clay than 1 obsBot per min
                (curr.clayBotCnt<bp.obsBotClay) && 
                (curr.ore>=bp.clayBotOre)
