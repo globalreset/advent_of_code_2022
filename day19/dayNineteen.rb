@@ -19,7 +19,7 @@ BotState = Struct.new(:minutes,
    :ore, :clay, :obs, :geode)
 
 def getBestGeodes(bp, minutes)
-   p bp
+   #p bp
    best = 0
    queue = [BotState.new(minutes, 1, 0, 0, 0, 0, 0, 0, 0)]
    visited = Set.new
@@ -29,12 +29,12 @@ def getBestGeodes(bp, minutes)
          visited << curr
          if(curr.minutes==0)
             if(best < curr.geode)
-               puts "found new best #{bp.id}: #{curr.geode}"
+               #puts "found new best #{bp.id}: #{curr.geode}"
                best = curr.geode
             end
-         #elsif(curr.geode + ((1...curr.minutes).to_a.sum) > best)
-         #elsif(crr.minutes > 20 || curr.geode + ((1...curr.minutes).to_a.sum) > best)
-         else
+         elsif(curr.geode + ((1..curr.minutes).to_a.sum) > best)
+         #elsif(curr.minutes > 20 || curr.geode + ((1...curr.minutes).to_a.sum) > best)
+         #else
             n = BotState.new(
                curr.minutes - 1,
                curr.oreBotCnt,
@@ -55,11 +55,11 @@ def getBestGeodes(bp, minutes)
                #don't need nore clay than 1 obsBot per min
                (curr.clayBotCnt<bp.obsBotClay) && 
                (curr.ore>=bp.clayBotOre)
-            canBuildOreBot = !canBuildGeodeBot && 
+            canBuildOreBot = !canBuildGeodeBot && !canBuildObsBot &&
                (curr.oreBotCnt<[bp.geodeBotOre,bp.obsBotOre,bp.clayBotOre].max) &&
                (curr.ore>=bp.oreBotOre)
             # don't want to hoard unnecessarily
-            canBuildNothing = !canBuildGeodeBot && 
+            canBuildNothing = !canBuildGeodeBot &&
                (curr.ore < 2*[bp.geodeBotOre,bp.obsBotOre,bp.clayBotOre].max) &&
                (curr.clay < 3*bp.obsBotClay)
 
@@ -120,14 +120,14 @@ def getBestGeodes(bp, minutes)
          end
       end
    end
-   puts "best: #{best}"
+   #puts "best: #{best}"
    return best
 end
 
-#puts blueprints.map { |bp|
-#   getBestGeodes(bp, 24) * bp.id
-#}.sum
-#
+puts blueprints.map { |bp|
+   getBestGeodes(bp, 24) * bp.id
+}.sum
+
 puts blueprints[0..2].map { |bp|
    getBestGeodes(bp, 32)
 }.inject(1,:*)
