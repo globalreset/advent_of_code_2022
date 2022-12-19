@@ -1,13 +1,6 @@
 inputList = IO.readlines("day19/dayNineteenInput.txt").map(&:chomp)
 
-require_relative '../util/util.rb'
 require "set"
-
-inputStr = <<EOF
-Blueprint 1: Each ore robot costs 4 ore.  Each clay robot costs 2 ore.  Each obsidian robot costs 3 ore and 14 clay.  Each geode robot costs 2 ore and 7 obsidian.
-Blueprint 2: Each ore robot costs 2 ore.  Each clay robot costs 3 ore.  Each obsidian robot costs 3 ore and 8 clay.  Each geode robot costs 3 ore and 12 obsidian.
-EOF
-inputList2 = inputStr.split("\n")
 
 Blueprint = Struct.new(:id, :oreBotOre, :clayBotOre, 
                        :obsBotOre, :obsBotClay, 
@@ -19,7 +12,6 @@ BotState = Struct.new(:minutes,
    :ore, :clay, :obs, :geode)
 
 def getBestGeodes(bp, minutes)
-   #p bp
    best = 0
    queue = [BotState.new(minutes, 1, 0, 0, 0, 0, 0, 0, 0)]
    visited = Set.new
@@ -32,9 +24,10 @@ def getBestGeodes(bp, minutes)
                #puts "found new best #{bp.id}: #{curr.geode}"
                best = curr.geode
             end
-         elsif(curr.geode + ((1..curr.minutes).to_a.sum) > best)
+         # abandon thread if there is no way we could beat the current best
+         #elsif(curr.geode + ((1..curr.minutes).to_a.sum) > best)
          #elsif(curr.minutes > 20 || curr.geode + ((1...curr.minutes).to_a.sum) > best)
-         #else
+         else
             n = BotState.new(
                curr.minutes - 1,
                curr.oreBotCnt,
@@ -47,23 +40,29 @@ def getBestGeodes(bp, minutes)
                curr.geode + curr.geodeBotCnt
             )
            
+            # always build geode bot if you can 
             canBuildGeodeBot = (curr.ore>=bp.geodeBotOre && curr.obs>=bp.geodeBotObs)
+            # don't build obs bot if you can build geode bot
             canBuildObsBot = !canBuildGeodeBot && 
+               #don't need more obs than 1 geodeBot per min
                (curr.obsBotCnt<bp.geodeBotObs) &&
                (curr.ore>=bp.obsBotOre && curr.clay>=bp.obsBotClay)
+            # don't build clay bot if you can build geode bot
             canBuildClayBot = !canBuildGeodeBot && !canBuildObsBot &&
-               #don't need nore clay than 1 obsBot per min
+               #don't need more clay than 1 obsBot per min
                (curr.clayBotCnt<bp.obsBotClay) && 
                (curr.ore>=bp.clayBotOre)
             canBuildOreBot = !canBuildGeodeBot && !canBuildObsBot &&
+               #don't need more ore than the max any bot could need per min
                (curr.oreBotCnt<[bp.geodeBotOre,bp.obsBotOre,bp.clayBotOre].max) &&
                (curr.ore>=bp.oreBotOre)
-            # don't want to hoard unnecessarily
+            # don't want to hoard if we can build a a geode bot
             canBuildNothing = !canBuildGeodeBot &&
+               # don't idle if we have already hoarded more clay and ore than we need
                (curr.ore < 2*[bp.geodeBotOre,bp.obsBotOre,bp.clayBotOre].max) &&
                (curr.clay < 3*bp.obsBotClay)
 
-            # push build nothing state only if we aren't overhoarding ore
+            # push build nothing state only 
             queue << n if(canBuildNothing)
 
                # push build geode bot state
@@ -120,7 +119,6 @@ def getBestGeodes(bp, minutes)
          end
       end
    end
-   #puts "best: #{best}"
    return best
 end
 
