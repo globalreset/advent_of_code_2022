@@ -3,7 +3,7 @@ inputList = IO.readlines("day20/dayTwentyInput.txt").map(&:chomp)
 # have to use an object with index to uniquify the value
 # otherwise can't distinguish repeat numbers in the list
 Holder = Struct.new(:index, :value)
-input = inputList.map(&:to_i).map.with_index{|v,i|Holder.new(i, v)}
+input = inputList.map.with_index{|v,i|Holder.new(i, v.to_i)}
 
 S = input.size
 
@@ -11,15 +11,13 @@ def mix (input, rounds)
    mixed = input.dup
    rounds.times {
       input.each {|o|
-         if(o.value != 0)
-            i = mixed.find_index(o)
-            n = (i + o.value - 1) % (S - 1) + 1
-            mixed.delete_at(i)
-            mixed.insert(n, o)
-         end
+         i = mixed.find_index(o)
+         n = (i + o.value - 1) % (S - 1) + 1
+         mixed.delete_at(i)
+         mixed.insert(n, o)
       }
    }
-   mixed
+   return mixed
 end
 
 m = mix(input, 1)
