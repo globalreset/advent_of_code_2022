@@ -12,9 +12,8 @@ def mix (input, rounds)
    rounds.times {
       input.each {|o|
          i = mixed.find_index(o)
-         n = (i + o.value - 1) % (S - 1) + 1
-         mixed.delete_at(i)
-         mixed.insert(n, o)
+         n = (i + (o.value%(S-1))) % (S - 1)
+         mixed.insert(n, mixed.delete_at(i))
       }
    }
    return mixed
