@@ -1,6 +1,6 @@
 inputList = IO.readlines("day23/dayTwentyThreeInput.txt").map(&:chomp)
 
-Elf = Struct.new(:id, :curr, :next)
+Elf = Struct.new(:curr, :next)
 elves = []
 grid = {}
 
@@ -8,8 +8,7 @@ cnt = 0
 inputList.each_with_index{ |r,y|
     r.split("").each_with_index{ |e,x|
         if(e=="#")
-            #elves << Elf.new(('A'.ord + cnt).chr, [x,y], [x,y])
-            elves << Elf.new("#", [x,y], [x,y])
+            elves << Elf.new([x,y], [x,y])
             grid[[x,y]] = elves[-1]
             cnt += 1
         end
@@ -53,7 +52,6 @@ def simulateElves(elves,grid)
     elves.each { |e|
         e.next = getNewCoord(grid, e.curr)
         newElfCnt[e.next] += 1
-        p e if (e.id=="A")
     }
     # check for collision
     elves.each{ |e|
@@ -82,9 +80,8 @@ yVals = grid.keys.map(&:last)
 puts (xVals.min..xVals.max).size * (yVals.min..yVals.max).size - elves.size
 
 rounds = 10
-done = false
-until(done)
+begin
     rounds += 1
-    done = (simulateElves(elves,grid)==0)
-end
+end until (simulateElves(elves,grid)==0)
+
 puts rounds
