@@ -30,15 +30,25 @@ $ih = inputList.size - 2
 # blizzards for that row and column, shift them by the amount of
 # time that has passed, and check whether or not they collide"
 def checkPos(pos, minutes)
-    # get row left
-    xLt = ($blizzardByType[pos[1].to_s + "<"]||[]).map { |x| 1 + (x - 1 - minutes) % $iw }
-    # get row right
-    xRt = ($blizzardByType[pos[1].to_s + ">"]||[]).map { |x| 1 + (x - 1 + minutes) % $iw }
-    # get column up
-    yUp = ($blizzardByType[pos[0].to_s + "^"]||[]).map { |y| 1 + (y - 1 - minutes) % $ih }
-    # get column down
-    yDn = ($blizzardByType[pos[0].to_s + "v"]||[]).map { |y| 1 + (y - 1 + minutes) % $ih }
-    return !xLt.include?(pos[0]) && !xRt.include?(pos[0]) && !yUp.include?(pos[1]) && !yDn.include?(pos[1])
+    if($blizzardByType["#{pos[1]}<>#{minutes}"]==nil)
+       # get row left
+       xLt = ($blizzardByType[pos[1].to_s + "<"]||[]).map { |x| 1 + (x - 1 - minutes) % $iw }
+       # get row right
+       xRt = ($blizzardByType[pos[1].to_s + ">"]||[]).map { |x| 1 + (x - 1 + minutes) % $iw }
+       $blizzardByType["#{pos[1]}<>#{minutes}"] = Set.new(xLt + xRt)
+    end
+    xVals = $blizzardByType["#{pos[1]}<>#{minutes}"]
+
+    if($blizzardByType["#{pos[0]}^v#{minutes}"]==nil)
+       # get column up
+       yUp = ($blizzardByType[pos[0].to_s + "^"]||[]).map { |y| 1 + (y - 1 - minutes) % $ih }
+       # get column down
+       yDn = ($blizzardByType[pos[0].to_s + "v"]||[]).map { |y| 1 + (y - 1 + minutes) % $ih }
+       $blizzardByType["#{pos[0]}^v#{minutes}"] = Set.new(yUp + yDn)
+    end
+    yVals = $blizzardByType["#{pos[0]}^v#{minutes}"]
+
+    return !xVals.include?(pos[0]) && !yVals.include?(pos[1])
 end
 
 xVals = $walls.map(&:first)
@@ -59,12 +69,9 @@ def timeToGoal(start, goal, currMinutes)
            if(curr.pos == goal)
                return curr.minutes
            else
-               if(checkPos(curr.pos, curr.minutes+1))
-                   queue << State.new(curr.pos, curr.minutes + 1)
-               end
-               [[0,1],[0,-1],[-1,0],[1,0]].each {|dir|
+               [[0,0],[0,1],[0,-1],[-1,0],[1,0]].each {|dir|
                   newPos = [curr.pos[0]+dir[0], curr.pos[1]+dir[1]]
-                  if(checkPos(newPos, curr.minutes+1) && !$walls.include?(newPos) && XR.cover?(newPos[0]) && YR.cover?(newPos[1]))
+                  if(checkPos(newPos, curr.minutes + 1) && !$walls.include?(newPos) && XR.cover?(newPos[0]) && YR.cover?(newPos[1]))
                       queue << State.new(newPos, curr.minutes + 1)
                   end
                }
