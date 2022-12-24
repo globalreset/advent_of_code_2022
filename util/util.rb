@@ -106,6 +106,16 @@ class Grid
       points.map{|x,y| getPoint(x,y)}
    end
 
+   def allCoords()
+      points = []
+      grid.keys.each { |x|
+         grid[x].keys.each { |y| 
+            points << [x,y] if(grid[x][y]!=nil)
+         }
+      }
+      points
+   end
+
    #helper function for calculating all the points along a line
    def getLine(x1,y1,x2,y2)
       lineBetween = []
@@ -143,7 +153,7 @@ class Grid
       (minY..maxY).to_a.each { |y|
          line = ""
          (minX..maxX).to_a.each { |x|
-            if(@grid.keys.include?(x) && @grid[x].keys.include?(y))
+            if(@grid.keys.include?(x) && @grid[x].keys.include?(y) && @grid[x][y]!=nil)
                line += "#{@grid[x][y]}" 
             else
                line += unassigned
